@@ -1,13 +1,14 @@
 package hello;
 
 import java.util.List;
+import java.lang.String;
+import java.util.Optional;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
+
 
 @Controller
 @RequestMapping("/customer")
@@ -24,10 +25,18 @@ public class CustomerController {
     }
 
 
-    @GetMapping("/list")
-    public String customerList(Model model) {
-        List<Customer> postList = customerRepository.findAll();
+    @GetMapping("/list/{id}")
+    public String customerList(Model model, @PathVariable long id) {
+        //Optional<Customer> optcustom = customerRepository.findOne(id);
+
+        List<Customer> postList = null;
+        if(id <= 5){
+            postList = customerRepository.findByIdLimit(id);
+        }
+
         model.addAttribute("user", postList);
+        model.addAttribute("paramid", id );
+
         return "customer/list";
     }
 
@@ -40,7 +49,7 @@ public class CustomerController {
 
         customerRepository.save(customer);
 
-        return "redirect:/customer/list";
+        return "redirect:/customer/list/"+customermodel.getId();
     }
 
 
